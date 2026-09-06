@@ -1,0 +1,83 @@
+# BUILD.bazel fragment. Must be added to common/BUILD.bazel to work
+# because it needs to use some private members from common/BUILD.bazel
+# e.g _DB845C_MODULE_OUTS and the base kernel_aarch64
+
+QM_DIST_DIR = "out/db845c-qm35/dist"
+QM_BUILD_CONFIG = "build.config.db845c-qm35"
+QM_SPI_MODULE = "//vendor/qorvo/linux-drivers/kernel:qm35_spi"
+
+# This DTB should work for EVB Rev.C and HDK but without managing power
+# regulator (they are just declared as gpio to allows default state setup).
+# The mini configuration should be specified by debug_flags module param.
+QM_DTB = "qcom/sdm845-db845c-hdk-qm35.dtb"
+
+kernel_build(
+    name = "db845c-qm35",
+    outs = [
+        # Use custom DTS
+        "arch/arm64/boot/dts/" + QM_DTB,
+    ],
+    # Enable mixed build.
+    base_kernel = ":kernel_aarch64",
+    # Use custom build config
+    build_config = QM_BUILD_CONFIG,
+    collect_unstripped_modules = True,
+    kmi_symbol_list = "android/abi_gki_aarch64_db845c",
+    make_goals = [
+        "modules",
+        QM_DTB,
+    ],
+    module_outs = _DB845C_MODULE_OUTS + _DB845C_WATCHDOG_MODULE_OUTS,
+    strip_modules = True,
+)
+
+kernel_images(
+    name = "db845c-qm35_images",
+    build_initramfs = True,
+    kernel_build = ":db845c-qm35",
+    kernel_modules_install = ":db845c-qm35_modules_install",
+)
+
+kernel_abi(
+    name = "db845c-qm35_abi",
+    kernel_build = ":db845c-qm35",
+    kmi_symbol_list_add_only = True,
+)
+
+# Defines the external module to install,
+kernel_modules_install(
+    name = "db845c-qm35_modules_install",
+    # Which build to install the modules in
+    kernel_build = ":db845c-qm35",
+    # Which modules to install
+    kernel_modules = [
+        QM_SPI_MODULE,
+    ]
+)
+
+merged_kernel_uapi_headers(
+    name = "db845c-qm35_merged_kernel_uapi_headers",
+    kernel_build = ":db845c-qm35",
+)
+
+# Entry point used when running
+# bazel run //common:db845c-qm35_dist
+copy_to_dist_dir(
+    name = "db845c-qm35_dist",
+    data = [
+        # Use our custom kernel
+        ":db845c-qm35",
+        ":db845c-qm35_images",
+        # Include the external modules
+        ":db845c-qm35_modules_install",
+        ":db845c-qm35_merged_kernel_uapi_headers",
+        # Mixed build: Additional GKI artifacts.
+        ":kernel_aarch64",
+        ":kernel_aarch64_modules",
+        ":kernel_aarch64_additional_artifacts",
+    ],
+    # Where to put the build results
+    dist_dir = QM_DIST_DIR,
+    flat = True,
+    log = "info",
+)

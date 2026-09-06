@@ -1,0 +1,64 @@
+// Device Tree overlay for QM35-HDK for Raspberry Pi 4
+#include "qm35.dtsi"
+
+/ {
+	compatible = "brcm,brcm2711";
+
+	fragment@6 {
+		target = <&gpio>;
+		__dormant__ {
+			qm35_vdd1and5_pin: qm35-vdd1and5-pin {
+				/* GPIO16*/
+				brcm,pins = <16>;
+				brcm,function = <1>;
+				brcm,pull = <0>;
+			};
+			qm35_vdd2to4_pin: qm35-vdd2to4-pin {
+				/* GPIO16*/
+				brcm,pins = <26>;
+				brcm,function = <1>;
+				brcm,pull = <0>;
+			};
+		};
+	};
+
+	fragment@7 {
+		target-path = "/";
+		__dormant__ {
+			qm35_vdd1and5: qm35-vdd1and5-regulator {
+				compatible = "regulator-fixed";
+				regulator-name = "QM35_VDD1_AND_5";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-boot-off;
+				enable-active-low;
+				gpio = <&gpio 16 1>; /* GPIO_ACTIVE_LOW */
+				pinctrl-names = "default";
+				pinctrl-0 = <&qm35_vdd1and5_pin>;
+			};
+			qm35_vdd2to4: qm35-vdd2to4-regulator {
+				compatible = "regulator-fixed";
+				regulator-name = "QM35_VDD2_TO_4";
+				regulator-min-microvolt = <1200000>;
+				regulator-max-microvolt = <1200000>;
+				regulator-boot-off;
+				enable-active-low;
+				gpio = <&gpio 26 1>; /* GPIO_ACTIVE_LOW */
+				pinctrl-names = "default";
+				pinctrl-0 = <&qm35_vdd2to4_pin>;
+			};
+		};
+	};
+
+	fragment@8 {
+		target = <&qm35>;
+		__dormant__ {
+			vdd1_reg-supply = <&qm35_vdd1and5>;
+			vdd2_reg-supply = <&qm35_vdd2to4>;
+		};
+	};
+
+	__overrides__ {
+		power = <0>, "+6+7+8";
+	};
+};

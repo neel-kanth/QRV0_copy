@@ -1,0 +1,19 @@
+{
+    "ChannelNumber": 9,
+    "RframeConfig": 0,
+    "PreambleCodeIndex": 9,
+    "PreambleDuration": 5,
+    "SessionPriority": 50,
+    "TimingParams": {
+            "burst_period_ms": 50,
+            "sweep_period_rstu": 12000,
+            "sweeps_per_burst": 1
+        },
+    "SamplesPerSweep": {"__type__": "Uint8", "value": 64},
+    "SweepOffset": {"__type__": "Int16", "value": -10},
+    "BitsPerSample": 1,
+    "NumberOfBursts": {"__type__": "Uint16", "value": 0},
+    "RadarDataType": {"__type__": "Uint8", "value": 0},
+    "AntennaSetId": 3,
+    "TxProfileIdx": 0
+}

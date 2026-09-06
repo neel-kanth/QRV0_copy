@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2025 Qorvo US, Inc.  All rights reserved.
+#
+# This software is proprietary to Qorvo; you may not use it
+# for any purpose without first obtaining a license from Qorvo.
+#
+# Please contact Qorvo to inquire about licensing terms.
+#
+
+menuconfig CHERRY_BRIDGE
+	bool "Cherry bridge"
+	default y
+	help
+	  Enable Cherry examples
+
+config CHERRY_BRIDGE_ZEPHYR
+	bool "Build Cherry bridge for Zephyr"
+	default n
+	depends on CHERRY_BRIDGE
+	help
+	  This option sets the build of Cherry bridge for Zephyr.

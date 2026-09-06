@@ -1,0 +1,186 @@
+#!/bin/bash
+# Simple script to generate a deb package from Makefile.
+# Take the same argument required to call "make modules_install"
+set -e
+
+# Extract required params
+KDIR=`realpath $2`
+eval $3 # O=
+eval $4 # M=
+D=`realpath $O/$M`
+CURDIR=`pwd`
+
+# Taken from mkdebian kernel script
+is_enabled() {
+	grep -q "^$1=y" $KDIR/include/config/auto.conf
+}
+
+if_enabled_echo() {
+	if is_enabled "$1"; then
+		echo -n "$2"
+	elif [ $# -ge 3 ]; then
+		echo -n "$3"
+	fi
+}
+
+set_debarch() {
+	if [ -n "$KBUILD_DEBARCH" ] ; then
+		debarch="$KBUILD_DEBARCH"
+		return
+	fi
+	# Attempt to find the correct Debian architecture
+	case "$UTS_MACHINE" in
+	i386|ia64|alpha|m68k|riscv*)
+		debarch="$UTS_MACHINE" ;;
+	x86_64)
+		debarch=amd64 ;;
+	aarch64|arm64)
+		debarch=arm64 ;;
+	arm*)
+		if is_enabled CONFIG_AEABI; then
+			debarch=arm$(if_enabled_echo CONFIG_VFP hf el)
+		else
+			debarch=arm
+		fi
+		;;
+	esac
+	if [ -z "$debarch" ]; then
+		debarch=$(dpkg-architecture -qDEB_HOST_ARCH)
+		echo "" >&2
+		echo "** ** **  WARNING  ** ** **" >&2
+		echo "" >&2
+		echo "Your architecture doesn't have its equivalent" >&2
+		echo "Debian userspace architecture defined!" >&2
+		echo "Falling back to the current host architecture ($debarch)." >&2
+		echo "Please add support for $UTS_MACHINE to ${0} ..." >&2
+		echo "" >&2
+	fi
+}
+eval UTS_MACHINE=`awk '/UTS_MACHINE/{print $3}' $KDIR/include/generated/compile.h`
+debarch=
+set_debarch
+
+# Some variables and settings used throughout the script
+kv=`cat $KDIR/include/config/kernel.release`
+
+if $(git rev-parse --is-shallow-repository); then
+	# On the CI, if the last tag is too old (about 150 commits), the git describe fails because
+	# it can't find the commit where is the tag. So unshallow the git repo and get the tags.
+	fetch_cmd="git fetch --shallow-since='one month ago' --force"
+	if ! eval $fetch_cmd ; then
+		# When deepening a shallow clone, the fetch command might fail with
+		# "fatal: error in object: unshallow <SHA1>". In this case, remove
+		# redundant packs and retry.
+		git repack -d
+		eval $fetch_cmd
+	fi
+fi
+
+version=`git describe --tags --long --match "R*" | sed 's/^R//;s/_.-/+/'`
+[ "$BUILD" = "debuginfo" ] && sufix="debuginfo"
+[ -e "$D/.version_${kv}_${version}${sufix}" ] || echo -n "1" > "$D/.version_${kv}_${version}${sufix}"
+revision=`cat "$D/.version_${kv}_${version}${sufix}"`
+
+# Don't rebuild if no commit (previous build with same version exist)
+[ $revision -gt 1 -a -z "$FORCE" ] && exit 0
+
+packagename=qorvo-uwb-modules
+name="David Girault <david.girault@qorvo.com>"
+dest=$D/debian/$packagename-$kv
+
+if is_enabled CONFIG_ARCH_BCM2835 && is_enabled CONFIG_OF_OVERLAY; then
+    # Ubuntu kernels or Debian kernels don't use the same path for overlays.
+    # - Ubuntu kernel use /lib/firmware/$kv/device-tree/overlays
+    # - Debian (RaspiOS) use /usr/lib/linux-image-$kv/overlays
+    # As we use RaspiOS kernel in projects/linux-build, use same base directory here.
+    # The flash-kernel tool will copy the dtbos itself.
+    DTBO_TARGET_DIR="usr/lib/linux-image-$kv/overlays"
+fi
+
+# Change to package build directory
+cd $D
+
+# zap previous debian directory
+[ -e debian ] && rm -rf debian
+mkdir -p debian/source/
+
+echo 10 > debian/compat
+echo "1.0" > debian/source/format
+
+# Generate a simple changelog template
+env DEBEMAIL="$name" dch --create --package $packagename -v $version-$revision$sufix "Updated to version $version"
+
+# Generate a control file
+cat <<EOF > debian/control
+Source: $packagename
+Section: kernel
+Priority: optional
+Maintainer: $name
+Standards-Version: 3.9.4
+Rules-Requires-Root: no
+Build-Depends: debhelper (>=10)
+
+Package: $packagename-$kv
+Architecture: $debarch
+Depends: linux-image-$kv
+Provides: $packagename
+Description: Qorvo UWB modules for Linux kernel $kv, version $version
+ This package contains the Qorvo UWB modules for kernel $kv, version: $version
+EOF
+
+# Generate copyright file
+cat <<EOF > debian/copyright
+This file is packaged version of the UWB stack for linux.
+
+Copyright: 2020-2022 Qorvo US, Inc.
+
+This software is provided under the GNU General Public License, version 2
+(GPLv2), as well as under a Qorvo commercial license.
+
+You may choose to use this software under the terms of the GPLv2 License,
+version 2 ("GPLv2"), as published by the Free Software Foundation.
+You should have received a copy of the GPLv2 along with this program.  If
+not, see <http://www.gnu.org/licenses/>.
+
+This program is distributed under the GPLv2 in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GPLv2 for more
+details.
+
+If you cannot meet the requirements of the GPLv2, you may not use this
+software for any purpose without first obtaining a commercial license from
+Qorvo. Please contact Qorvo to inquire about licensing terms.
+
+On Debian GNU/Linux systems, the complete text of the GNU General Public
+License version 2 can be found in \`/usr/share/common-licenses/GPL-2'.
+EOF
+
+# Generate rule file
+cat <<EOF > debian/rules
+#!/usr/bin/make -f
+DH_VERBOSE = 1
+MD=$dest
+
+override_dh_install:
+	\$(MAKE) -C $KDIR O=$O M=$M INSTALL_MOD_PATH=\$(MD) modules_install
+	# Remove depmod generated file
+	rm -f \$(MD)/lib/modules/$kv/modules.* || true
+	rm -f \$(MD)/lib/modules/$kv/build
+	rm -f \$(MD)/lib/modules/$kv/source
+	# Add dtbo if required.
+	if [ "$DTBO_TARGET_DIR" ]; then \\
+		o=\$(MD)/$DTBO_TARGET_DIR && \\
+		mkdir -p \$\$o && \\
+		find drivers -name '*.dtbo' -exec cp {} \$\$o \\; ;\\
+	fi
+
+%:
+	dh \$@
+EOF
+
+dpkg-buildpackage -rfakeroot -a$debarch -b -nc -uc
+
+# upgrade revision for next build
+echo -n "$(( $revision + 1 ))" > ".version_${kv}_${version}${sufix}"
+
+exit 0

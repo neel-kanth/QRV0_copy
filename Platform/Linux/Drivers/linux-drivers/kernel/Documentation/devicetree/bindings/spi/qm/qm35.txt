@@ -1,0 +1,112 @@
+QM35 SPI modular driver
+
+Required properties:
+
+	- compatible: 				"qorvo,qm35_spi"
+
+	- reg:					chip-select index used by the device.
+						Set to <0> or <1>.
+
+	- interrupts-extended or interrupts:	interrupt line used by the qm35 chip to wakeup
+						the host processor upon activity.
+						Deprecated and cannot be used as the same time as "irq-gpios", see below.
+
+	- pinctrl-0:				pin control group to be used for this controller.
+
+	- pinctrl-names:			must contain a "default" entry.
+
+	- spi-max-frequency:			max frequency supported by the QM35 chip (or the routed board
+						that handles the chip).
+						Set to 40000000 which is the max supported speed of QM35.
+						Use a more conservative value if QM35 is connected to its host using
+						very long traces on board.
+
+	- reset-gpios:				reset GPIO to use to perform a hard reset of the QM35 chip.
+
+	- irq-gpios:				GPIO pin to use as an IRQ line through the GPIOLIB framework.
+						Using this property instead of "interrupts" is required to be able to
+						use the chip's boot ROM command mode and update its firmware.
+
+Optional properties:
+	- vdd1_reg-supply: 			regulator that powers the qm35 device.
+
+	- vdd2_reg-supply: 			regulator that powers the qm35 device.
+
+	- vdd3_reg-supply: 			regulator that powers the qm35 device.
+
+	- vdd4_reg-supply: 			regulator that powers the qm35 device.
+
+	- vdd5_reg-supply: 			regulator that powers the qm35 device.
+
+	- power_reg-supply: 			regulator that powers the qm35 device. Deprecated.
+
+	- power_reg_1p8-supply:			regulator that powers a 1.8V line of the qm35 device. Deprecated.
+
+	- power_reg_2p5-supply:			regulator that powers a 2.5V line of the qm35 device. Deprecated.
+
+	- regulator_delay_us:			delay in us to wait after regulator(s) state is changed.
+						Default is 1000 us.
+
+	- exton-gpios:				GPIO pin to use as a validator of the qm35's state
+						When defined, this gpio is used to confirm if the qm35
+						is awake or not.
+
+	- ready-gpios: 				GPIO pin to use as a validator of the qm35's state
+						When defined, this gpio is used to confirm if the qm35 is
+						ready before using it.
+
+	- wakeup-gpios:				GPIO pin to use as an IRQ.
+						When defined, this pin is used to wake up the qm35.
+
+	- cpu:					CPU# on which the QM35 worker thread will run.
+						If not set, processing thread is not bound to a specific CPU and
+						the scheduler may move it, adding latencies.
+
+	- qos_latency:				latency request to PM QoS on active ranging in microseconds.
+						default is 0, the minimum PM QoS latency.
+
+	- hsspi_delay_us:			delay added before each SPI transfers in qm35_hsspi_recv()
+						and qm35_hsspi_send().
+						Default is 0us.
+
+	- debug_flags:				debug flags bit-field:
+							- bit 0: RESERVED. Reserved for future use.
+							- bit 1: AUTO_TRACE. If set, automatically enable traces
+							  for qm35_spi and qm35 events modules.
+							- bit 2: FORCE_FW_UPDATE. If set, force the firmware update.
+							- bit 3: NO_FW_UPDATE. Disable firmware flashing completely.
+							- bit 4: NO_RESET_ON_SUSPEND: Disable holding reset in PM
+							  suspend callback.
+							- bit 5: COMBINED_WRITE: Allow combined read/write while
+							  receiving a frame.
+							- bit 6: AUTO_LOAD_OPTIONAL: Automatically load optional
+							  modules.
+							- bit 7: NO_PROBING: Disable probing. Assume device always
+							  present.
+							- bit 8: LOW_GPIO: Bypass ready, wakeup and exton GPIOs setup,
+                                                          even if defined in the DT.
+
+	- fw_name:				name of the firmware file to be loaded, replacing the default one.
+
+Example:
+        /* QM35 */
+        qm35@0 {
+            compatible = "qorvo,qm35_spi";
+            reg = <0>;
+
+            pinctrl-names = "default";
+            pinctrl-0 = <&qm35_default_state>;
+
+            spi-max-frequency = <40000000>;
+
+            irq-gpios =  <&tlmm 49 GPIO_ACTIVE_HIGH>;
+            reset-gpios = <&tlmm 50 GPIO_ACTIVE_LOW>;
+
+            power_reg-supply = <&qm35_regulator>;
+
+            cpu = <1>;
+            qos_latency = <0>;
+            regulator_delay_us = <1000>;
+
+            status = "okay";
+        };

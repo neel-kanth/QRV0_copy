@@ -1,0 +1,28 @@
+# Get version from gitversion.mk file if available.
+-include $(srctree)/$(src)/gitversion.mk $(src)/gitversion.mk
+ifeq ($(GITVERSION),)
+# Default to current git repo if gitversion.mk file doesn't exist.
+GITVERSION := $(shell git describe --tags --long --match "R*")
+endif
+ifeq ($(GITVERSION),)
+GITVERSION := unknown
+endif
+
+# Add defines in subdir-ccflags
+subdir-ccflags-y := -I$(src) -I$(src)/include \
+ -I$(srctree)/$(src) -I$(srctree)/$(src)/include -Werror -Wall
+subdir-ccflags-y += -DGITVERSION="\"$(GITVERSION)\""
+
+# Ensure include for exported API is visible for all modules
+# accross the new build tree.
+subdir-ccflags-y += -I$(src)/drivers/base/qm \
+ -I$(srctree)/$(src)/drivers/base/qm
+
+# I want debug info in our modules to be able to analyse dumpstack().
+# Only if not already enabled by CONFIG_DEBUG_INFO.
+ifneq ($(CONFIG_DEBUG_INFO),y)
+subdir-ccflags-y += -g
+endif
+
+obj-m := drivers/spi/
+obj-$(CONFIG_QM35) += drivers/base/qm/

@@ -1,0 +1,69 @@
+# Allow include external library files (tests require them unconditionally).
+subdir-ccflags-y += -I$(src)/libqmrom/include -I$(src)/libfwupdater/include \
+ -I$(srctree)/$(src)/libqmrom/include -I$(srctree)/$(src)/libfwupdater/include
+subdir-ccflags-$(CONFIG_QM35_FLASHING) += -DCONFIG_QM35_FLASHING
+subdir-ccflags-$(CONFIG_QM35_PROBING) += -DCONFIG_QM35_PROBING
+
+# QM35 transport modules
+ifdef CONFIG_SPI_MASTER
+# Build qm35_spi.ko only if SPI supported on target kernel.
+qm35_spi-y := \
+		qm35_hsspi.o \
+		qm35_spi_main.o \
+		qm35_spi_pm.o \
+		qm35_spi_setup.o \
+		qm35_spi_thread.o \
+		qm35_spi_transport.o \
+		qm35_spi_trc.o
+
+# Add optional probing.
+qm35_spi-$(CONFIG_QM35_PROBING) += qm35_uci_probe.o
+
+# Uncomment to change default debug_flags to 18 (AUTO_TRACE|NO_RESET_ON_SUSPEND)
+#CFLAGS_qm35_spi_main.o := -DDEFAULT_DEBUG_FLAGS=18
+# Uncomment to change default auto suspend delay value to 250 MS
+#CFLAGS_qm35_spi_pm.o := -DAUTOSUSPEND_DELAY_MS=250
+
+ifeq ($(CONFIG_QM35_FLASHING),y)
+
+CFLAGS_libqmrom/src/qm357xx_rom_c0.o := -DCONFIG_FLASHING_STATS
+CFLAGS_libqmrom/src/qm358xx_rom.o := -DCONFIG_FLASHING_STATS
+CFLAGS_libfwupdater/src/fwupdater.o := -DCONFIG_FLASHING_STATS
+
+qm35_spi-y += \
+		libfwupdater/src/fwupdater.o \
+		libqmrom/src/qm357xx_rom_b0.o \
+		libqmrom/src/qm357xx_rom_c0.o \
+		libqmrom/src/qm357xx_rom_common.o \
+		libqmrom/src/qm358xx_rom.o \
+		libqmrom/src/qmrom_common.o \
+		libqmrom/src/qmrom_log.o \
+		qm35_spi_fw.o \
+		qmrom_wrapper.o
+
+endif
+
+obj-m += qm35_spi.o
+endif
+
+# Include tests even if CONFIG_SPI_MASTER not set as we use mock functions.
+ifdef CONFIG_KUNIT
+ifdef CONFIG_KUNIT_TESTS
+obj-m += tests/
+endif
+endif
+
+ifeq ($(CONFIG_OF_OVERLAY)$(CONFIG_ARCH_BCM2835),yy)
+# DTBO for RaspberryPi
+# Check quiet_cmd_dtco exists in scripts/Makefile.lib
+# to enable/disable dtbo files generation.
+GENERATE_DTBO := $(shell grep -c "^quiet_cmd_dtco" $(srctree)/scripts/Makefile.lib)
+ifeq ($(GENERATE_DTBO), 0)
+    $(info dtbo files cannot be generated)
+else
+dtbo-y += qm35-evb.dtbo qm35-hdk.dtbo
+always-y += $(dtbo-y)
+# For kernel < 5.6
+always += $(dtbo-y)
+endif
+endif

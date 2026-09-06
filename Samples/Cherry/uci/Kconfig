@@ -1,0 +1,29 @@
+#
+# Copyright (c) 204 Qorvo US, Inc.  All rights reserved.
+#
+# This software is proprietary to Qorvo; you may not use it
+# for any purpose without first obtaining a license from Qorvo.
+#
+# Please contact Qorvo to inquire about licensing terms.
+#
+
+menuconfig UCI
+	bool "UCI lib"
+	default y
+	help
+	  Enable UCI
+
+config UCI_TRANSPORT_USE_QMUTILS
+	bool "Add UCI transport based on qm-utils lib"
+	default n
+	depends on UCI && QMUTILS
+	help
+	  This option sets the build of UCI lib to use qm-utils based transport.
+
+config UCI_ZEPHYR
+	bool "Use UCI lib for Zephyr"
+	default n
+	depends on UCI
+	select QMUTILS_ZEPHYR if QMUTILS && UCI_TRANSPORT_USE_QMUTILS
+	help
+	  This option sets the build of UCI lib for Zephyr.

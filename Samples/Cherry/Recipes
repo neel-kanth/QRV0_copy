@@ -1,0 +1,98 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Qorvo, Inc.
+# SPDX-License-Identifier: LicenseRef-QORVO-2
+
+# Run with `make -f Recipes`.
+#
+# You can get help with `make -f Recipes help`.
+
+ALL = host aarch64-linux aarch64-openwrt
+
+CHROOT ?= uwb-stack-cross
+
+ifneq ($(CHROOT),)
+aarch64-linux_ENV = schroot -p -c $(CHROOT) --
+endif
+aarch64-linux_CMAKE_TOOLCHAIN = -DCMAKE_TOOLCHAIN_FILE=./tools/cmake/$*-toolchain.cmake
+
+OPENWRT_TOOLCHAIN_PATH ?= /opt/gcc/openwrt-toolchain-22.03.5-bcm27xx-bcm2711_gcc-11.2.0_musl.Linux-x86_64/toolchain-aarch64_cortex-a72_gcc-11.2.0_musl/bin
+ifeq ($(notdir $(abspath $(OPENWRT_TOOLCHAIN_PATH)/../..)),staging_dir)
+# Using an SDK
+OPENWRT_STAGING_DIR ?= $(abspath $(firstword $(wildcard $(OPENWRT_TOOLCHAIN_PATH)/../../target-*)))
+aarch64-openwrt_ENV = \
+	PATH=$(OPENWRT_TOOLCHAIN_PATH):$$PATH \
+	STAGING_DIR=$(OPENWRT_STAGING_DIR) \
+	PKG_CONFIG_LIBDIR=$(OPENWRT_STAGING_DIR)/usr/lib/pkgconfig:$(OPENWRT_STAGING_DIR)/usr/share/pkgconfig \
+	PKG_CONFIG_SYSROOT_DIR=$(OPENWRT_STAGING_DIR)
+else
+# Using a Toolchain
+OPENWRT_STAGING_DIR ?= $(abspath $(OPENWRT_TOOLCHAIN_PATH)/..)
+aarch64-openwrt_ENV = \
+	PATH=$(OPENWRT_TOOLCHAIN_PATH):$$PATH \
+	STAGING_DIR=$(OPENWRT_STAGING_DIR) \
+	PKG_CONFIG_LIBDIR=$(OPENWRT_STAGING_DIR)
+endif
+aarch64-openwrt_CMAKE_TOOLCHAIN = -DCMAKE_TOOLCHAIN_FILE=./tools/cmake/$*-toolchain.cmake
+
+CMAKE_DEF := -DCMAKE_BUILD_TYPE=Debug
+ifneq ($(UCI_GTESTS),)
+CMAKE_DEF += -DUCI_GTESTS=$(UCI_GTESTS)
+endif
+ifneq ($(INSTALL_DIR),)
+CMAKE_DEF += -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR)
+endif
+
+all: $(ALL:%=%.all)
+clean: $(ALL:%=%.clean)
+cmake: $(ALL:%=%.cmake)
+
+%.all:
+	$($*_ENV) cmake --build build-$* $(CMAKE_BUILD_PARAMS) -t all
+
+%.clean:
+	$($*_ENV) cmake --build build-$* $(CMAKE_BUILD_PARAMS) -t clean
+
+%.install:
+	$($*_ENV) cmake --build build-$* $(CMAKE_BUILD_PARAMS) -t install
+
+%.cmake:
+	$($*_ENV) cmake -B build-$* -G Ninja $(CMAKE_DEF) $($*_CMAKE_TOOLCHAIN) $(EXTRA_CMAKE_ARGS)
+
+test:
+	$(MAKE) -C cherry -f Recipes cmake $@
+
+cov:
+	$(MAKE) -C cherry -f Recipes cmake $@
+
+check: check_format
+
+check_format:
+	./tools/check-format .
+
+help:
+	@echo "For all configured targets ($(ALL))"
+	@echo "  cmake - run cmake to create the build tree, must be done once"
+	@echo "  all   - build program"
+	@echo "  clean - remove generated files"
+	@echo ""
+	@echo "For a specific target (for example $(firstword $(ALL)))"
+	@echo "  %.cmake   - same as cmake, but for one target"
+	@echo "  %.all     - same as all, but for one target"
+	@echo "  %.clean   - same as clean, but for one target"
+	@echo "  %.install - install built program and files"
+	@echo ""
+	@echo "Generic commands"
+	@echo "  check_format - run clang-format"
+	@echo "  check        - run all checks"
+	@echo "  test         - run all Google tests (only UCI for now)"
+	@echo "  cov          - run all Google tests with coverage check"
+	@echo ""
+	@echo "Usefull variables"
+	@echo "  CHROOT       - specify another chroot or remove default one"
+	@echo ""
+	@echo "Examples:"
+	@echo "  # Prepare build directory for aarch64-linux target"
+	@echo "  make -f Recipes aarch64-linux.cmake"
+	@echo "  # Build without entering chroot for host having toolchain installed"
+	@echo "  make -f Recipes aarch64-linux.all CHROOT="
+	@echo "  # Run all Google tests"
+	@echo "  make -f Recipes test"

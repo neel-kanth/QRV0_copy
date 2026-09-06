@@ -1,0 +1,40 @@
+# Uncomment to change default device name and number of devices.
+# Used in qm3x_uci_dev_main.c, qm3x_ids.c and tests/
+#subdir-ccflags-y += -DQM3X_UCI_DEV_DEVICE_NAME="\"qm35dev\""
+#subdir-ccflags-y += -DQM35_NUM_DEVICES=1
+
+# QM3x core apis module
+qm3x_apis-y := \
+		qm3x_bypass.o \
+		qm3x_core.o \
+		qm3x_ids.o \
+		qm3x_notifier.o \
+		qm3x_transport.o \
+		qm3x_trc.o
+
+obj-m += qm3x_apis.o
+
+# QM3x UCI char device
+qm3x_uci_dev-y :=\
+		qm3x_uci_dev_main.o \
+		qm3x_uci_dev_trc.o
+
+obj-m += qm3x_uci_dev.o
+
+# QM3x qtraces/logs receiver
+obj-m += qm3x_logs.o
+
+# QM3x coredump receiver
+obj-m += qm3x_coredump.o
+
+# Optional QM35 HWSIM
+ifeq (m,$(CONFIG_QM35_HWSIM))
+obj-m += hwsim/
+endif
+
+# Optional kunit tests
+ifdef CONFIG_KUNIT
+ifdef CONFIG_KUNIT_TESTS
+obj-m += tests/
+endif
+endif

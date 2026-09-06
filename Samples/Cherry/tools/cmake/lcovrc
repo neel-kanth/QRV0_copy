@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Qorvo, Inc.
+# SPDX-License-Identifier: LicenseRef-QORVO-2
+
+lcov_branch_coverage = 1
+lcov_excl_br_line = WARN_RETURN|switch

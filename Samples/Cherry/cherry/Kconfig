@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2021 Qorvo US, Inc.  All rights reserved.
+#
+# This software is proprietary to Qorvo; you may not use it
+# for any purpose without first obtaining a license from Qorvo.
+#
+# Please contact Qorvo to inquire about licensing terms.
+#
+
+menuconfig CHERRY
+	bool "Cherry lib"
+	default y
+	help
+	  Enable Cherry lib
+
+config CHERRY_ZEPHYR
+	bool "Use Cherry lib for Zephyr"
+	default n
+	depends on CHERRY
+	select QOSAL_IMPL_ZEPHYR
+	select UCI_ZEPHYR
+	help
+	  This option sets the build of Cherry lib for Zephyr.

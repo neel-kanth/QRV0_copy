@@ -1,0 +1,9 @@
+obj-$(CONFIG_QM35) += qm/
+
+# Build spi-geni-qcom-lowlatency.ko only if SPI and Qualcomm arch are supported
+# on target kernel.
+ifdef CONFIG_SPI_MASTER
+ifdef CONFIG_ARCH_QCOM
+obj-$(CONFIG_QCOM_SPI_LOWLATENCY) += spi-geni-qcom-lowlatency.o
+endif
+endif

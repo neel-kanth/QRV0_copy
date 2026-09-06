@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: Copyright (c) 2024 Qorvo, Inc.
+# SPDX-License-Identifier: LicenseRef-QORVO-2
+
+config HSSPI
+	bool "QM35 HSSPI driver"
+	default y
+	#depends on DT_HAS_ZEPHYR_HSSPI_ENABLED
+	select GPIO
+	select SPI
+	help
+	  Enable hsspi driver

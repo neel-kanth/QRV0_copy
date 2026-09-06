@@ -1,0 +1,4 @@
+# Parameters for uci-bridge.service
+SERIAL_PORT=/dev/ttyS0
+LOG_LEVEL=4
+EXTRA_OPTS=

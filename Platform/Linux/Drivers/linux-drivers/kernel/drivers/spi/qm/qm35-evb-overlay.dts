@@ -1,0 +1,56 @@
+// Device Tree overlay for QM35 for Raspberry Pi 4
+#include "qm35.dtsi"
+
+/ {
+	compatible = "brcm,brcm2711";
+
+	/* EVB revA/B pull-ups. */
+
+	fragment@7 {
+		target = <&qm35_pins_full>;
+		__dormant__ {
+			brcm,pull = <0 0 1 0 1>;
+		};
+	};
+	fragment@8 {
+		target = <&qm35_pins_mini>;
+		__dormant__ {
+			brcm,pull = <0 1>;
+		};
+	};
+
+	/* EVB rev IRQ on CS1. */
+
+	/* Ensure spi0 does not use GPIO7 as CS */
+	fragment@9 {
+		target = <&spi0>;
+		__dormant__ {
+			cs-gpios = <&gpio 8 1>;
+		};
+	};
+	fragment@10 {
+		target = <&spi0_cs_pins>;
+		__dormant__ {
+			brcm,pins = <8>;
+		};
+	};
+	fragment@11 {
+		target = <&qm35_pins_full>;
+		__dormant__ {
+			brcm,pins = <4 17 23 24 7>;
+		};
+	};
+	fragment@12 {
+		target = <&qm35_pins_mini>;
+		__dormant__ {
+			brcm,pins = <24 7>;
+		};
+	};
+
+	__overrides__ {
+		/* revA boards need pull-up */
+		reva = <0>, "+7+8";
+		/* revB boards need pull-up + CS1 removed from SPI0. */
+		revb = <0>, "+7+8+9+10+11+12";
+	};
+};

@@ -1,0 +1,122 @@
+#include "sdm845-db845c-qm35.dts"
+
+/* Disable camera since it use gpio9 as reset. */
+/* Avoid the following error at boot:
+ * ov8856: probe of 16-0010 failed with error -5 */
+&cci_i2c0 {
+	camera@10 {
+		status = "disable";
+	};
+};
+
+/* Declare all regulators connected to gpios. */
+
+/ {
+	qm35_vdd1: qm35-vdd1-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "QM35_VDD1";
+
+		vin-supply = <&vdc_5v>;
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+
+		enable-active-low;
+		gpio = <&tlmm 10 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&qm35_vdd1_en_default>;
+	};
+	qm35_vdd2: qm35-vdd2-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "QM35_VDD2";
+
+		vin-supply = <&vdc_5v>;
+		regulator-min-microvolt = <2500000>;
+		regulator-max-microvolt = <2500000>;
+
+		enable-active-low;
+		gpio = <&tlmm 6 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&qm35_vdd2_en_default>;
+	};
+	qm35_vdd3: qm35-vdd3-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "QM35_VDD3";
+
+		vin-supply = <&vdc_5v>;
+		regulator-min-microvolt = <1600000>;
+		regulator-max-microvolt = <1600000>;
+
+		enable-active-low;
+		gpio = <&tlmm 9 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&qm35_vdd3_en_default>;
+	};
+	qm35_vdd4: qm35-vdd4-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "QM35_VDD4";
+
+		vin-supply = <&vdc_5v>;
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+
+		enable-active-low;
+		gpio = <&tlmm 26 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&qm35_vdd4_en_default>;
+	};
+	qm35_vdd5: qm35-vdd5-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "QM35_VDD5";
+
+		vin-supply = <&vdc_5v>;
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+
+		enable-active-low;
+		gpio = <&tlmm 8 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&qm35_vdd5_en_default>;
+	};
+};
+
+&tlmm {
+	qm35_vdd1_en_default: qm35-vdd1-default {
+		pins = "gpio10";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+	qm35_vdd2_en_default: qm35-vdd2-default {
+		pins = "gpio6";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+	qm35_vdd3_en_default: qm35-vdd3-default {
+		pins = "gpio9";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+	qm35_vdd4_en_default: qm35-vdd4-default {
+		pins = "gpio26";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+	qm35_vdd5_en_default: qm35-vdd5-default {
+		pins = "gpio8";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+};
+
+/* Add them to QM35. */
+&qm35 {
+	vdd1_reg-supply = <&qm35_vdd1>;
+	vdd2_reg-supply = <&qm35_vdd2>;
+	vdd3_reg-supply = <&qm35_vdd3>;
+	vdd4_reg-supply = <&qm35_vdd4>;
+	vdd5_reg-supply = <&qm35_vdd5>;
+};

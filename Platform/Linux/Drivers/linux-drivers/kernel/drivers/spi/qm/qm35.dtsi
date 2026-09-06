@@ -1,0 +1,96 @@
+// Device Tree overlay for QM35 for Raspberry Pi 4
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,brcm2711";
+
+	/* Ensure spi0 is enabled */
+	fragment@0 {
+		target = <&spi0>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	/* Disable spi-dev for spi0.0 & spi0.1 */
+	fragment@1 {
+		target = <&spidev0>;
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+	fragment@2 {
+		target = <&spidev1>;
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+
+	/* Configure GPIOS. */
+	fragment@3 {
+		target = <&gpio>;
+		__overlay__ {
+			/* Full */
+			qm35_pins_full: qm35-pins-full {
+				/* Signal Wakeup, EXTON,  READY,  RST,	  IRQ	 *
+				 * on	  GPIO4,  GPIO17, GPIO23, GPIO24, GPIO25 */
+				brcm,pins = <4 17 23 24 25>;
+				/* Function: 0: in, 1: out, 2: alt5, 3: alt4, 4-7: alt0-3 */
+				brcm,function = <1 0 0 1 0>;
+				/* Pull up/down config: 0: disabled, 1: down, 2: up */
+				brcm,pull = <0 0 0 0 0>;
+			};
+			/* Mini */
+			qm35_pins_mini: qm35-pins-mini {
+				/* Signal RST,	  IRQ	 *
+				 * on	  GPIO24, GPIO25 */
+				brcm,pins = <24 25>;
+				/* Function: 0: in, 1: out, 2: alt5, 3: alt4, 4-7: alt0-3 */
+				brcm,function = <1 0>;
+				/* Pull up/down config: 0: disabled, 1: down, 2: up */
+				brcm,pull = <0 0>;
+			};
+		};
+	};
+
+	/* Add QM35 device on spi0.0 */
+	fragment@4 {
+		target = <&spi0>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			qm35: qm35@0 {
+				compatible = "qorvo,qm35_spi";
+				reg = <0>; /* CE0 */
+				pinctrl-names = "default";
+				pinctrl-0 = <&qm35_pins_full>;
+				spi-max-frequency = <10000000>;
+
+				reset-gpios = <&gpio 24 7>; /* (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN) */
+				irq-gpios = <&gpio 25 0>; /* GPIO_ACTIVE_HIGH */
+
+				qorvo,eui64 = /bits/ 64 <0>;
+				qorvo,panid = /bits/ 16 <0>;
+				status = "okay";
+			};
+		};
+	};
+
+	fragment@5 {
+		target = <&qm35>;
+		__overlay__ {
+			ready-gpios = <&gpio 23 0>; /* GPIO_ACTIVE_HIGH */
+			exton-gpios = <&gpio 17 0>; /* GPIO_ACTIVE_HIGH */
+			wakeup-gpios = <&gpio 4 0>; /* GPIO_ACTIVE_HIGH */
+		};
+	};
+
+	__overrides__ {
+		mini = <0>, "-5",
+			<&qm35>, "pinctrl-0:0=", <&qm35_pins_mini>;
+		eui64 = <&qm35>,"qorvo,eui64#0";
+		panid = <&qm35>,"qorvo,panid;0";
+	};
+};

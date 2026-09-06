@@ -1,0 +1,32 @@
+pages:
+  stage: build
+  image: python:3.11-alpine
+  script:
+    - |
+      if [ -z "$PAGES_API_TOKEN" ]; then
+        echo "ERROR: PAGES_API_TOKEN is not set"
+        exit 1
+      fi
+
+    - |
+      if [ -z "$PAGES_SOURCE_ARTIFACT_URL" ]; then
+        echo "ERROR: PAGES_SOURCE_ARTIFACT_URL is not set"
+        exit 1
+      fi
+
+    - echo "Deploying GitLab Pages..."
+    - echo "Getting the iot job artifact..."
+    - |
+      wget --header="PRIVATE-TOKEN: $PAGES_API_TOKEN" -O artifact.zip "$PAGES_SOURCE_ARTIFACT_URL"
+      unzip -o artifact.zip
+
+    - echo "Pages deployed successfully"
+    - echo "Content of public directory:"
+    - ls -la public/
+    - echo "Checking if index.html exists:"
+    - ls -la public/index.html || echo "No index.html found in public/"
+  artifacts:
+    paths:
+      - public
+  when: manual
+  allow_failure: false

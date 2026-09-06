@@ -1,0 +1,15 @@
+#include "sdm845-db845c-hdk-qm35.dts"
+
+&qm35 {
+	irq-gpios = <&tlmm 49 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+	ready-gpios = <&tlmm 52 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+};
+
+&qm35_default_state {
+	irq {
+		bias-pull-down;
+	};
+	ready {
+		bias-pull-down;
+	};
+};

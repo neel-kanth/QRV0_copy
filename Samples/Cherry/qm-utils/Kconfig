@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2025 Qorvo US, Inc.  All rights reserved.
+#
+# This software is proprietary to Qorvo; you may not use it
+# for any purpose without first obtaining a license from Qorvo.
+#
+# Please contact Qorvo to inquire about licensing terms.
+#
+
+menuconfig QMUTILS
+	bool "Use qm-utils library"
+	default y
+	help
+	  Enable qm-utils library
+
+config QMUTILS_ZEPHYR
+	bool "Use qm-utils library for Zephyr"
+	default n
+	depends on QMUTILS
+	help
+	  This option sets the build of qm-utils library for Zephyr.

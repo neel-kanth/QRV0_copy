@@ -1,0 +1,109 @@
+[build-system]
+requires = [ "poetry-core",]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "uwb-qorvo-tools"
+version = "13.1.0"
+description = "Ultrawideband Qorvo Tools"
+authors = [ "Qorvo Inc. <qorvo@qorvo.com>",]
+license = "Proprietary"
+readme = [ "README.md", "LICENSE",]
+[[tool.poetry.packages]]
+include = "lib"
+
+[[tool.poetry.packages]]
+include = "scripts"
+
+[tool.poetry.dependencies]
+python = ">=3.9 <3.12.0"
+pyserial = "*"
+colorama = "*"
+toml = "*"
+
+[tool.poetry.scripts]
+config_manager_store_default_val = "scripts.device.config_manager_store_default_val.config_manager_store_default_val:main"
+get_cal = "scripts.device.get_cal.get_cal:main"
+get_cap = "scripts.device.get_cap.get_cap:main"
+get_config = "scripts.device.get_config.get_config:main"
+get_device_info = "scripts.device.get_device_info.get_device_info:main"
+get_power_stats = "scripts.device.get_power_stats.get_power_stats:main"
+get_uwb_cpu_stats = "scripts.device.get_uwb_cpu_stats.get_uwb_cpu_stats:main"
+get_uwb_device_stats = "scripts.device.get_uwb_device_stats.get_uwb_device_stats:main"
+list_sessions = "scripts.device.list_sessions.list_sessions:main"
+load_cal = "scripts.device.load_cal.load_cal:main"
+reset_calibration = "scripts.device.reset_calibration.reset_calibration:main"
+reset_device = "scripts.device.reset_device.reset_device:main"
+set_cal = "scripts.device.set_cal.set_cal:main"
+set_config = "scripts.device.set_config.set_config:main"
+fira_360_aoa = "scripts.fira.fira_360_aoa.fira_360_aoa:main"
+listen_to_ntf = "scripts.fira.listen_to_ntf.listen_to_ntf:main"
+ranging_start = "scripts.fira.ranging_start.ranging_start:main"
+ranging_stop = "scripts.fira.ranging_stop.ranging_stop:main"
+run_fira_dt = "scripts.fira.run_fira_dt.run_fira_dt:main"
+run_fira_owr = "scripts.fira.run_fira_owr.run_fira_owr:main"
+run_fira_test_loopback = "scripts.fira.run_fira_test_loopback.run_fira_test_loopback:main"
+run_fira_test_per_rx = "scripts.fira.run_fira_test_per_rx.run_fira_test_per_rx:main"
+run_fira_test_periodic_tx = "scripts.fira.run_fira_test_periodic_tx.run_fira_test_periodic_tx:main"
+run_fira_test_rx = "scripts.fira.run_fira_test_rx.run_fira_test_rx:main"
+run_fira_test_ss_twr = "scripts.fira.run_fira_test_ss_twr.run_fira_test_ss_twr:main"
+run_fira_twr = "scripts.fira.run_fira_twr.run_fira_twr:main"
+session_deinit = "scripts.fira.session_deinit.session_deinit:main"
+session_init = "scripts.fira.session_init.session_init:main"
+session_set_conf = "scripts.fira.session_set_conf.session_set_conf:main"
+start_fira_twr = "scripts.fira.start_fira_twr.start_fira_twr:main"
+stop_fira_twr = "scripts.fira.stop_fira_twr.stop_fira_twr:main"
+run_qorvo_clock_out_config = "scripts.qorvo.hw_test_mode.run_qorvo_clock_out_config.run_qorvo_clock_out_config:main"
+run_qorvo_clock_out_control = "scripts.qorvo.hw_test_mode.run_qorvo_clock_out_control.run_qorvo_clock_out_control:main"
+run_qorvo_gpio_configure = "scripts.qorvo.hw_test_mode.run_qorvo_gpio_configure.run_qorvo_gpio_configure:main"
+run_qorvo_gpio_get = "scripts.qorvo.hw_test_mode.run_qorvo_gpio_get.run_qorvo_gpio_get:main"
+run_qorvo_gpio_set = "scripts.qorvo.hw_test_mode.run_qorvo_gpio_set.run_qorvo_gpio_set:main"
+run_qorvo_test_pll_lock = "scripts.qorvo.run_qorvo_test_pll_lock.run_qorvo_test_pll_lock:main"
+run_qorvo_test_rtc = "scripts.qorvo.run_qorvo_test_rtc.run_qorvo_test_rtc:main"
+run_qorvo_test_tx_cw = "scripts.qorvo.run_qorvo_test_tx_cw.run_qorvo_test_tx_cw:main"
+radar_fira_interleaving = "scripts.radar.radar_fira_interleaving.radar_fira_interleaving:main"
+radar_presence_detection_demo_cli = "scripts.radar.radar_presence_detection_demo.radar_presence_detection_demo_cli:main"
+radar_presence_detection_demo_gui = "scripts.radar.radar_presence_detection_demo.radar_presence_detection_demo_gui:main"
+radar_simple_demo = "scripts.radar.radar_simple_demo.radar_simple_demo:main"
+l1_to_config = "scripts.utils.l1_to_config.l1_to_config:main"
+uqt_info = "scripts.utils.uqt_info.uqt_info:main"
+uqt_ls = "scripts.utils.uqt_ls.uqt_ls:main"
+
+[tool.ruff.lint]
+select = [ "F401", "F403", "F405", "F406", "F821", "F822", "F823",]
+
+[tool.poetry.dependencies.uwb-uci]
+path = "lib/uwb-uci"
+develop = true
+
+[tool.poetry.dependencies.uqt-utils]
+path = "lib/uqt-utils"
+develop = true
+
+[tool.poetry.group.extra.dependencies]
+shiboken6 = "6.7.1"
+pycparser = "*"
+pyftdi = "*"
+pyft4222 = "0.1.2"
+matplotlib = "*"
+PySide6 = "*"
+scikit-learn = "*"
+scipy = "*"
+pyqtgraph = "*"
+colorhash = "*"
+superqt = "*"
+numpy = "*"
+
+[tool.poetry.group.dev.dependencies]
+pyyaml = "*"
+gitpython = "^3.1.43"
+toml = "*"
+
+[tool.poetry.group.doc.dependencies]
+sphinx = "*"
+myst-parser = "*"
+sphinx-rtd-theme = "*"
+sphinx-exec-code = "*"
+sphinxcontrib-eval = "*"
+sphinxcontrib-programoutput = "*"
+linkify-it-py = "*"

@@ -1,0 +1,142 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2023 Qorvo, Inc.
+ * SPDX-License-Identifier: LicenseRef-QORVO-2
+ */
+
+#ifndef __QM35_UCI_DEV_IOCTL_H
+#define __QM35_UCI_DEV_IOCTL_H
+
+#ifdef CONFIG_QMUTILS_ZEPHYR
+#define _IO(b, v, f) (((unsigned)(b) << 16) | ((unsigned)(v) << 8) | (f))
+#define _IOR(b, v, t) _IO((b), (v), 0)
+#define _IOW(b, v, t) _IO((b), (v), 1)
+#else
+#include <sys/ioctl.h>
+#endif
+
+#define QM35_UCI_DEV_IOC_TYPE 'U'
+
+/**
+ * DOC: UCI char device IOCTLs
+ *
+ * The UCI char device supports the following IOCTLs.
+ *
+ * * %QM35_CTRL_RESET (1): Issue a device reset and return device state.
+ * * %QM35_CTRL_RESET_EXT (1): Issue a device reset.
+ *
+ *   This IOCTL allows resetting the chip to bootrom command mode by setting the
+ *   parameter to 1.
+ * * %QM35_CTRL_GET_STATE (2): Retrieve current state of device.
+ *
+ *   This IOCTL is deprecated and is here to maintain compatibility with other
+ *   UCI char dev drivers.
+ * * %QM35_CTRL_FW_UPLOAD (3): Run FW update process and return device state.
+ * * %QM35_CTRL_FW_UPLOAD_EXT (3): Run FW update process. The name of the
+ *   firmware file to be loaded can optionally be passed as a parameter.
+ *
+ *   Both %QM35_CTRL_FW_UPLOAD and %QM35_CTRL_FW_UPLOAD_EXT are synchronous.
+ *
+ *   In case of success of %QM35_CTRL_FW_UPLOAD and %QM35_CTRL_FW_UPLOAD_EXT,
+ *   the return value of the ioctl() call will be the value returned by
+ *   qm35_transport_fw_update().
+ * * %QM35_CTRL_POWER (4): Manual power management of the device.
+ *
+ *   This IOCTL is deprecated and is here to maintain compatibility with other
+ *   UCI char dev driver. This driver will always do power-management itself when
+ *   the UCI char is opened or closed. This IOCTL may be used to force power-down
+ *   the device while keeping the UCI device opened but it's better to close the
+ *   device correctly as it allows to unload the transport driver (which is not
+ *   possible when UCI char device is kept opened).
+ * * %QM35_CTRL_SET_STATE (5): Change the current device state value.
+ *
+ *   This IOCTL allows an app to change the current state, but this will be only
+ *   until another event comes since the state is reset to ready each time an
+ *   event is received.
+ * * %QM35_CTRL_GET_TYPE (6): Retrieve current type of message exchanged.
+ *
+ *   By default, when opened, the type of message received and sent is set to
+ *   UCI. This IOCTL allows applications to retrieve the current type.
+ * * %QM35_CTRL_SET_TYPE (7): Set type of message exchanged.
+ *
+ *   This IOCTL allows applications to change the type of messages sent to  or
+ *   received from the device, allowing them to manually flash, retrieve logs or
+ *   change logs configuration.
+ * * %QM35_CTRL_WAIT_EVENT (8): Wait for an event without consuming CPU when
+ *   file is open in NON-BLOCKING mode. You may use the poll() API instead.
+ * * %QM35_CTRL_IRQ (9): Enable or disable IRQ on the device.
+ *
+ *   This IOCTL allows applications to disable IRQ on the device. This is
+ *   required for applications that do not comply with the HSSPI STC protocol,
+ *   like the QM357xx firmware updater. Setting the parameter to 0 or 1 will
+ *   disable or enable IRQ.
+ * * %QM35_CTRL_WAIT_IRQ (10): Wait for the IRQ line to be asserted.
+ *
+ *   This IOCTL allows applications to wait for the IRQ line to be asserted,
+ *   when IRQ has been disabled.
+ *   The timeout in milliseconds is passed as a parameter. The ioctl() call will
+ *   return 0 on success, else a negative value.
+ * * %QM35_CTRL_SPI_TRANSFER (11): Perform a SPI transfer.
+ *
+ *   This IOCTL allows applications to perform a raw SPI transfer. This is
+ *   required for applications that not comply with the HSSPI STC protocol.
+ */
+
+#define QM35_FIRMWARE_FILENAME_SIZE 64
+
+/**
+ * enum qm35_uci_dev_states - States of the UCI char device.
+ * @QM35_UCI_DEV_CTRL_STATE_UNKNOWN: Unknown state.
+ * @QM35_UCI_DEV_CTRL_STATE_OFF: Power off state.
+ * @QM35_UCI_DEV_CTRL_STATE_RESET: Reset state.
+ * @QM35_UCI_DEV_CTRL_STATE_COREDUMP: Core dump state.
+ * @QM35_UCI_DEV_CTRL_STATE_READY: Ready state.
+ * @QM35_UCI_DEV_CTRL_STATE_FW_DOWNLOADING: Firmware downloading state.
+ * @QM35_UCI_DEV_CTRL_STATE_UCI_APP: UCI application state.
+ */
+enum qm35_uci_dev_states {
+	QM35_UCI_DEV_CTRL_STATE_UNKNOWN = 0x0000,
+	QM35_UCI_DEV_CTRL_STATE_OFF = 0x0001,
+	QM35_UCI_DEV_CTRL_STATE_RESET = 0x0002,
+	QM35_UCI_DEV_CTRL_STATE_COREDUMP = 0x0004,
+	QM35_UCI_DEV_CTRL_STATE_READY = 0x0008,
+	QM35_UCI_DEV_CTRL_STATE_FW_DOWNLOADING = 0x0010,
+	QM35_UCI_DEV_CTRL_STATE_UCI_APP = 0x0020,
+};
+
+/**
+ * struct qm35_fwupload_params - Parameters for FW_UPLOAD_EXT ioctl.
+ * @fw_name: Name of the firmware file to be loaded, replacing the default one.
+ */
+struct qm35_fwupload_params {
+	char fw_name[QM35_FIRMWARE_FILENAME_SIZE];
+};
+
+/**
+ * struct qm35_spi_transfer_params - Parameters for SPI_TRANSFER ioctl.
+ * @tx_buf: Buffer containing the data to be sent.
+ * @rx_buf: Buffer to store the received data.
+ * @len: Length of the transfer.
+ */
+struct qm35_spi_transfer_params {
+	char *tx_buf;
+	char *rx_buf;
+	unsigned int len;
+};
+
+#define QM35_CTRL_RESET _IOR(QM35_UCI_DEV_IOC_TYPE, 1, unsigned int)
+#define QM35_CTRL_RESET_EXT _IOW(QM35_UCI_DEV_IOC_TYPE, 1, unsigned int)
+#define QM35_CTRL_GET_STATE _IOR(QM35_UCI_DEV_IOC_TYPE, 2, unsigned int)
+#define QM35_CTRL_FW_UPLOAD _IOR(QM35_UCI_DEV_IOC_TYPE, 3, unsigned int)
+#define QM35_CTRL_FW_UPLOAD_EXT \
+	_IOW(QM35_UCI_DEV_IOC_TYPE, 3, struct qm35_fwupload_params)
+#define QM35_CTRL_POWER _IOW(QM35_UCI_DEV_IOC_TYPE, 4, unsigned int)
+#define QM35_CTRL_SET_STATE _IOW(QM35_UCI_DEV_IOC_TYPE, 5, unsigned int)
+#define QM35_CTRL_GET_TYPE _IOR(QM35_UCI_DEV_IOC_TYPE, 6, unsigned int)
+#define QM35_CTRL_SET_TYPE _IOW(QM35_UCI_DEV_IOC_TYPE, 7, unsigned int)
+#define QM35_CTRL_WAIT_EVENT _IOR(QM35_UCI_DEV_IOC_TYPE, 8, unsigned int)
+#define QM35_CTRL_IRQ _IOW(QM35_UCI_DEV_IOC_TYPE, 9, unsigned int)
+#define QM35_CTRL_WAIT_IRQ _IOW(QM35_UCI_DEV_IOC_TYPE, 10, unsigned int)
+#define QM35_CTRL_SPI_TRANSFER \
+	_IOW(QM35_UCI_DEV_IOC_TYPE, 11, struct qm35_spi_transfer_params)
+
+#endif /* __QM35_UCI_DEV_IOCTL_H */

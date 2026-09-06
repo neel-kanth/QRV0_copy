@@ -1,0 +1,54 @@
+#include "sdm845-db845c-qm35.dts"
+
+/* Disable camera since it use gpio9 as reset. */
+/* Avoid the following error at boot:
+ * ov8856: probe of 16-0010 failed with error -5 */
+&cci_i2c0 {
+	camera@10 {
+		status = "disable";
+	};
+};
+
+/* Ensure all gpios connected to regulators are low. */
+
+&qm35_default_state {
+	vdd1 {
+		pins = "gpio10";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+	vdd2 {
+		pins = "gpio6";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+	vdd3 {
+		pins = "gpio9";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+	vdd4 {
+		pins = "gpio26";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+	vdd5 {
+		pins = "gpio8";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+};
+
+/* Add them to QM35 (but unused by the driver). */
+&qm35 {
+	vdd1-gpios = <&tlmm 10 GPIO_ACTIVE_LOW>;
+	vdd2-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
+	vdd3-gpios = <&tlmm 9 GPIO_ACTIVE_LOW>;
+	vdd4-gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
+	vdd5-gpios = <&tlmm 8 GPIO_ACTIVE_LOW>;
+};

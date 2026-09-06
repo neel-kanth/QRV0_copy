@@ -1,0 +1,4 @@
+version: 1
+regions:
+  region1: [ country1, US ]
+  region2: [ RU, country4 ]

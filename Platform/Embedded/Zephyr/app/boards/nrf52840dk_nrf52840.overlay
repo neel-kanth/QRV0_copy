@@ -1,0 +1,81 @@
+ /**
+ * SPDX-FileCopyrightText: Copyright (c) 2024 Qorvo, Inc.
+ * SPDX-License-Identifier: LicenseRef-QORVO-2
+ *
+ */
+
+&spi3 {
+	/* spi3 (aka arduino_spi) is already enabled in board dts. So just add our
+	 * device. */
+	qm35: hsspi@0 {
+		status = "okay";
+		compatible = "qorvo,hsspi";
+		reg = <0>;
+		spi-max-frequency = <5000000>;
+		ss-irq-gpios = <&gpio1 10 0>;
+		reset-gpios = <&gpio1 8 0>;
+		exton-gpios = <&gpio1 6 0>;
+	};
+};
+
+&uart0 {
+	current-speed = <1000000>;
+	hw-flow-control;
+};
+
+&temp {
+	status = "disabled";
+};
+
+&cryptocell {
+	status = "disabled";
+};
+
+&spi1 {
+	status = "disabled";
+};
+
+&i2c0 {
+	status = "disabled";
+};
+
+&adc {
+	status = "disabled";
+};
+
+&uart1 {
+	status = "disabled";
+};
+
+&pwm0 {
+	status = "disabled";
+};
+
+&ieee802154 {
+	status = "disabled";
+};
+
+/*
+user_button gpio: Button 1, P0.11.
+user_led gpio: LED 1, P0.13.
+*/
+/ {
+	aliases {
+		user-button = &user_button;
+		user-led = &user_led;
+	};
+	leds {
+		compatible = "gpio-leds";
+		user_led: user_led {
+			gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+			label = "User LED";
+		};
+	};
+	buttons {
+		compatible = "gpio-keys";
+		user_button: user_button {
+			gpios = <&gpio0 11 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "User button";
+		};
+	};
+};

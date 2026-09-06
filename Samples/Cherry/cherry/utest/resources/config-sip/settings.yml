@@ -1,0 +1,51 @@
+version: 1
+config:
+  ant0:
+    transceiver: TX
+    port : 2
+    ext_sw_cfg : 0
+    lna : false
+  ant1 :
+    transceiver: RXB
+    port : 2
+    ext_sw_cfg : 0
+    lna : true
+  ant2 :
+    transceiver: RXA
+    port : 3
+    ext_sw_cfg : 0
+    lna : true
+  ant3 :
+    transceiver: RXA
+    port : 4
+    ext_sw_cfg : 0
+    lna : true
+  ant_pair0 :
+    axis : x
+    ant_paths : [ 2, 1 ]
+  ant_pair1 :
+    axis : y
+    ant_paths : [ 3, 1 ]
+  ant_pair2 :
+    axis : z
+    ant_paths : [ 3, 2 ]
+  ant_set0:
+    nb_rx_ants : 2
+    rx_ants_are_pairs : false
+    tx_ant_paths : [ 0, -1 ]
+    rx_ants : [ 1, 2, -1 ]
+    tx_power_control:
+      frame : 1
+      post_tx : 1
+      rfu : 0
+      debug : 0
+  ant_set1:
+    rx_ants_are_pairs : true
+    nb_rx_ants : 3
+    tx_ant_paths : [ 0, -1 ]
+    rx_ants : [ 2, 1, 0 ]
+    tx_power_control:
+      frame : 1
+      post_tx : 1
+      rfu : 0
+      debug : 0

@@ -1,0 +1,37 @@
+#include "sdm845-db845c-qm35-mini.dts"
+
+/* On DB with HDK with Low OV Radio board no level-shifters exist, so pull-down
+ * may be required. In that case, the new sdm845-db845c-hdk-qm35-lowov.dtb
+ * should be used. */
+
+/* This DTS should be used in all other configuration since no pull-down are
+ * used since EVB and HDK + Multi OV Radio board use level-shifters. */
+
+&qm35 {
+	ready-gpios = <&tlmm 52 GPIO_ACTIVE_HIGH>;
+	wakeup-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+	exton-gpios = <&tlmm 40 GPIO_ACTIVE_HIGH>;
+};
+
+&qm35_default_state {
+	ready {
+		pins = "gpio52";
+		function = "gpio";
+		bias-disable;
+		input-enable;
+	};
+
+	exton {
+		pins = "gpio40";
+		function = "gpio";
+		bias-disable;
+		input-enable;
+	};
+
+	wakeup {
+		pins = "gpio51";
+		function = "gpio";
+		bias-disable;
+		output-low;
+	};
+};

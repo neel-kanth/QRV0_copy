@@ -1,0 +1,54 @@
+#include "sdm845-db845c.dts"
+
+&spi0 {
+	compatible = "qorvo,geni-spi-lowlatency", "qcom,geni-spi";
+};
+
+&spi2 {
+	compatible = "qorvo,geni-spi-lowlatency", "qcom,geni-spi";
+	status = "okay";
+	cs-gpio = <&tlmm 30 GPIO_ACTIVE_LOW>;
+
+	/* QM35 on LS-SPI0 */
+	qm35: qm35@0 {
+		compatible = "qorvo,qm35_spi";
+		reg = <0>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&qm35_default_state>;
+
+		spi-max-frequency = <20000000>;
+
+		reset-gpios = <&tlmm 50 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
+		irq-gpios = <&tlmm 49 GPIO_ACTIVE_HIGH>;
+
+		status = "okay";
+	};
+};
+
+&tlmm {
+	qm35_default_state: qm35-default {
+		irq {
+			pins = "gpio49";
+			function = "gpio";
+			bias-disable;
+			input-enable;
+		};
+		reset {
+			pins = "gpio50";
+			function = "gpio";
+			bias-disable;
+			output-low;
+		};
+	};
+};
+
+/* Activate LS-UART0 */
+&uart3 {
+	status = "okay";
+};
+/ {
+	aliases {
+		hsuart1 = &uart3;
+	};
+};

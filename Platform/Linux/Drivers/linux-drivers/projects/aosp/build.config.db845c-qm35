@@ -1,0 +1,39 @@
+KERNEL_DIR=common;
+EXT_MODULES=vendor/qorvo/linux-drivers/kernel;
+SCRIPT_DIR=execroot/__main__/vendor/qorvo/linux-drivers/projects/aosp;
+. ${ROOT_DIR}/${KERNEL_DIR}/build.config.common
+. ${ROOT_DIR}/${KERNEL_DIR}/build.config.aarch64
+
+BUILD_INITRAMFS=1
+DEFCONFIG=db845c_gki_defconfig
+FRAGMENT_CONFIG=${KERNEL_DIR}/arch/arm64/configs/db845c_gki.fragment
+PRE_DEFCONFIG_CMDS="KCONFIG_CONFIG=${ROOT_DIR}/${KERNEL_DIR}/arch/arm64/configs/${DEFCONFIG} ${ROOT_DIR}/${KERNEL_DIR}/scripts/kconfig/merge_config.sh -m -r ${ROOT_DIR}/${KERNEL_DIR}/arch/arm64/configs/gki_defconfig ${ROOT_DIR}/${FRAGMENT_CONFIG}"
+POST_DEFCONFIG_CMDS="rm ${ROOT_DIR}/${KERNEL_DIR}/arch/arm64/configs/${DEFCONFIG}"
+
+QM_DTB="qcom/sdm845-db845c-hdk-qm35.dtb"
+MAKE_GOALS="${MAKE_GOALS}
+${QM_DTB}
+Image.gz
+"
+
+FILES="${FILES}
+arch/arm64/boot/Image.gz
+arch/arm64/boot/dts/${QM_DTB}
+vmlinux
+"
+KMI_SYMBOL_LIST=android/abi_gki_aarch64_db845c
+GKI_MODULES_LIST=android/gki_aarch64_modules
+
+# Do not build the entire kernel. Instead, only build external
+# modules. A possible issue is that in this case, the Module.symvers
+# file is not generated. So depending on your kernel configuration the
+# module could fail to load.
+if [ -n "$QM_MODULE_ONLY" ]; then
+    BUILD_INITRAMFS=0
+    IN_KERNEL_MODULES=""
+    MAKE_GOALS="modules_prepare ${QM_DTB}"
+fi
+
+CONFIG_QM35=m
+CONFIG_QCOM_SPI_LOWLATENCY=m
+CONFIG_DW3000=n

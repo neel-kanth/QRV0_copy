@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: Copyright (c) 2024 Qorvo, Inc.
+# SPDX-License-Identifier: LicenseRef-QORVO-2
+
+# Run with `make -f Recipes`.
+#
+# You can get help with `make -f Recipes help`.
+
+all: ninja-san ninja-cov ninja-rel
+
+ninja-san:
+	cmake --build utest/build-san $(CMAKE_BUILD_PARAMS)
+
+ninja-cov:
+	cmake --build utest/build-cov $(CMAKE_BUILD_PARAMS)
+
+ninja-rel:
+	cmake --build utest/build-rel $(CMAKE_BUILD_PARAMS)
+
+test: ninja-san
+	./utest/build-san/test_uci $(TESTFLAGS)
+
+cov: ninja-cov
+	cmake --build utest/build-cov $(CMAKE_BUILD_PARAMS) -t test_uci_coverage
+
+cmake:
+	cmake -S utest -B utest/build-san -G Ninja -DCMAKE_BUILD_TYPE=Debug $(CMAKE_PARAMS)
+	cmake -S utest -B utest/build-cov -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENABLE_TEST_COVERAGE=ON $(CMAKE_PARAMS)
+	cmake -S utest -B utest/build-rel -G Ninja -DCMAKE_BUILD_TYPE=Release $(CMAKE_PARAMS)
+
+clean:
+	test -d utest/build-san && cmake --build build-san $(CMAKE_BUILD_PARAMS) -t clean
+	test -d utest/build-cov && cmake --build build-cov $(CMAKE_BUILD_PARAMS) -t clean
+	test -d utest/build-rel && cmake --build build-rel $(CMAKE_BUILD_PARAMS) -t clean
+
+check: check_format
+
+check_format:
+	../tools/check-format .
+
+help:
+	@echo "cmake - run cmake to create the build tree, must be done once"
+	@echo "all   - build program"
+	@echo "test  - build and run tests"
+	@echo "cov   - build and run tests with coverage analysis"
+	@echo "clean - remove generated files"
+	@echo ""
+	@echo "check_format - run clang-format"
+	@echo "check        - run all checks"

@@ -1,0 +1,56 @@
+{
+  "values": {
+    "xtal_trim": "0x33",
+
+    "ant0.transceiver": "0x00",
+    "ant0.port": "0x01",
+    "ant0.ch5.ref_frame0.tx_power_index": "0x51515151",
+    "ant0.ch9.ref_frame0.tx_power_index": "0x48484848",
+    "ant0.ch5.ant_delay": "16402",
+    "ant0.ch9.ant_delay": "16391",
+    "ant0.ch5.pa_gain_offset": "0x8",
+    "ant0.ch9.pa_gain_offset": "0x6",
+
+    "ant1.transceiver": "0x02",
+    "ant1.port": "0x02",
+    "ant1.lna": "1",
+    "ant1.ch5.ant_delay": "16400",
+    "ant1.ch9.ant_delay": "16358",
+
+    "ant_set0.tx_ant_paths": "0xFF00",
+    "ant_set0.nb_rx_ants": "0x01",
+    "ant_set0.rx_ants_are_pairs": "0x00",
+    "ant_set0.rx_ants": "0xFFFF00",
+
+    "ant2.transceiver": "0x00",
+    "ant2.port": "0x02",
+    "ant2.ch5.ref_frame0.tx_power_index": "0x50505050",
+    "ant2.ch9.ref_frame0.tx_power_index": "0x47474747",
+    "ant2.ch5.ant_delay": "16412",
+    "ant2.ch9.ant_delay": "16398",
+    "ant2.ch5.pa_gain_offset": "0x7",
+    "ant2.ch9.pa_gain_offset": "0x7",
+
+    "ant3.transceiver": "0x01",
+    "ant3.port": "0x03",
+    "ant3.lna": "1",
+    "ant3.ch5.ant_delay": "16412",
+    "ant3.ch9.ant_delay": "16405",
+
+    "ant4.transceiver": "0x02",
+    "ant4.port": "0x01",
+    "ant4.lna": "1",
+    "ant4.ch5.ant_delay": "16459",
+    "ant4.ch9.ant_delay": "16312",
+
+    "ant_pair0.axis": "0x00",
+    "ant_pair0.ant_paths": "0x0403",
+    "ant_pair0.ch5.pdoa.offset": "12110",
+    "ant_pair0.ch9.pdoa.offset": "12232",
+
+    "ant_set1.tx_ant_paths": "0xFF02",
+    "ant_set1.nb_rx_ants": "0x01",
+    "ant_set1.rx_ants_are_pairs": "0x01",
+    "ant_set1.rx_ants": "0xFFFF00"
+  }
+}

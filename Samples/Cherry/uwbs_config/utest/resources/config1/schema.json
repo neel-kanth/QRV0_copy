@@ -1,0 +1,940 @@
+{
+  "$defs": {
+    "alternate_pulse_shape": {
+      "enum": [
+        "NONE",
+        "JAPAN"
+      ],
+      "type": "string",
+      "underlying_enum": {
+        "JAPAN": 1,
+        "NONE": 0
+      }
+    },
+    "ant_port": {
+      "enum": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "NA"
+      ],
+      "type": "string",
+      "underlying_enum": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "NA": 15
+      }
+    },
+    "antenna_channel": {
+      "properties": {
+        "ref_frame0": {
+          "$ref": "#/$defs/antenna_channel_ref_frame"
+        },
+        "ref_frame1": {
+          "$ref": "#/$defs/antenna_channel_ref_frame"
+        },
+        "ref_frame2": {
+          "$ref": "#/$defs/antenna_channel_ref_frame"
+        },
+        "ref_frame3": {
+          "$ref": "#/$defs/antenna_channel_ref_frame"
+        },
+        "ref_frame4": {
+          "$ref": "#/$defs/antenna_channel_ref_frame"
+        },
+        "ref_frame5": {
+          "$ref": "#/$defs/antenna_channel_ref_frame"
+        },
+        "ref_frame6": {
+          "$ref": "#/$defs/antenna_channel_ref_frame"
+        },
+        "ref_frame7": {
+          "$ref": "#/$defs/antenna_channel_ref_frame"
+        },
+        "ant_delay": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Ant Delay",
+          "type": "integer",
+          "underlying_type": "uint32_t"
+        },
+        "tx_bypass_delay_offset": {
+          "maximum": 127,
+          "minimum": -128,
+          "title": "Tx Bypass Delay Offset",
+          "type": "integer",
+          "underlying_type": "int8_t"
+        },
+        "rx_bypass_delay_offset": {
+          "maximum": 127,
+          "minimum": -128,
+          "title": "Rx Bypass Delay Offset",
+          "type": "integer",
+          "underlying_type": "int8_t"
+        },
+        "pa_gain_offset": {
+          "maximum": 127,
+          "minimum": -128,
+          "title": "Pa Gain Offset",
+          "type": "integer",
+          "underlying_type": "int8_t"
+        },
+        "pg_count": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Pg Count",
+          "type": "integer",
+          "underlying_type": "uint8_t"
+        },
+        "pg_delay": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Pg Delay",
+          "type": "integer",
+          "underlying_type": "uint8_t"
+        },
+        "rssi_offset_q3": {
+          "maximum": 127,
+          "minimum": -128,
+          "title": "Rssi Offset Q3",
+          "type": "integer",
+          "underlying_type": "int8_t"
+        }
+      },
+      "required": [
+        "ref_frame0",
+        "ref_frame1",
+        "ref_frame2",
+        "ref_frame3",
+        "ref_frame4",
+        "ref_frame5",
+        "ref_frame6",
+        "ref_frame7",
+        "ant_delay",
+        "tx_bypass_delay_offset",
+        "rx_bypass_delay_offset",
+        "pa_gain_offset",
+        "pg_count",
+        "pg_delay",
+        "rssi_offset_q3"
+      ],
+      "title": "antenna_channel",
+      "type": "object"
+    },
+    "antenna_channel_ref_frame": {
+      "properties": {
+        "tx_power_index": {
+          "items": {
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer",
+            "underlying_type": "uint8_t"
+          },
+          "maxItems": 4,
+          "title": "Tx Power Index",
+          "type": "array"
+        },
+        "max_gating_gain": {
+          "items": {
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer",
+            "underlying_type": "uint8_t"
+          },
+          "maxItems": 4,
+          "title": "Max Gating Gain",
+          "type": "array"
+        },
+        "post_tx_power_index": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Post Tx Power Index",
+          "type": "integer",
+          "underlying_type": "uint8_t"
+        }
+      },
+      "required": [
+        "tx_power_index",
+        "max_gating_gain",
+        "post_tx_power_index"
+      ],
+      "title": "antenna_channel_ref_frame",
+      "type": "object"
+    },
+    "antenna_pair": {
+      "properties": {
+        "axis": {
+          "$ref": "#/$defs/pdoa_axis"
+        },
+        "ant_paths": {
+          "items": {
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "underlying_type": "int8_t"
+          },
+          "maxItems": 2,
+          "title": "Ant Paths",
+          "type": "array"
+        },
+        "ch5": {
+          "$ref": "#/$defs/antenna_pair_channel"
+        },
+        "ch9": {
+          "$ref": "#/$defs/antenna_pair_channel"
+        }
+      },
+      "required": [
+        "axis",
+        "ant_paths",
+        "ch5",
+        "ch9"
+      ],
+      "title": "antenna_pair",
+      "type": "object"
+    },
+    "antenna_pair_channel": {
+      "properties": {
+        "pdoa": {
+          "$ref": "#/$defs/pdoa_config"
+        }
+      },
+      "required": [
+        "pdoa"
+      ],
+      "title": "antenna_pair_channel",
+      "type": "object"
+    },
+    "antenna_path": {
+      "properties": {
+        "ch5": {
+          "$ref": "#/$defs/antenna_channel"
+        },
+        "ch9": {
+          "$ref": "#/$defs/antenna_channel"
+        },
+        "transceiver": {
+          "$ref": "#/$defs/transceiver"
+        },
+        "port": {
+          "$ref": "#/$defs/ant_port"
+        },
+        "ext_sw_cfg": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Ext Sw Cfg",
+          "type": "integer",
+          "underlying_type": "uint8_t"
+        },
+        "lna": {
+          "title": "Lna",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ch5",
+        "ch9",
+        "transceiver",
+        "port",
+        "ext_sw_cfg",
+        "lna"
+      ],
+      "title": "antenna_path",
+      "type": "object"
+    },
+    "antenna_set": {
+      "properties": {
+        "rx_ants": {
+          "items": {
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "underlying_type": "int8_t"
+          },
+          "maxItems": 3,
+          "title": "Rx Ants",
+          "type": "array"
+        },
+        "tx_ant_path": {
+          "maximum": 3,
+          "minimum": -1,
+          "title": "Tx Ant Path",
+          "type": "integer",
+          "underlying_type": "int8_t"
+        },
+        "nb_rx_ants": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Nb Rx Ants",
+          "type": "integer",
+          "underlying_type": "uint8_t"
+        },
+        "rx_ants_are_pairs": {
+          "title": "Rx Ants Are Pairs",
+          "type": "boolean"
+        },
+        "tx_power_control": {
+          "$ref": "#/$defs/tx_power_control"
+        }
+      },
+      "required": [
+        "rx_ants",
+        "tx_ant_path",
+        "nb_rx_ants",
+        "rx_ants_are_pairs",
+        "tx_power_control"
+      ],
+      "title": "antenna_set",
+      "type": "object"
+    },
+    "channel": {
+      "properties": {
+        "wifi_coex_enabled": {
+          "title": "Wifi Coex Enabled",
+          "type": "boolean"
+        },
+        "pll_locking_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Pll Locking Code",
+          "type": "integer",
+          "underlying_type": "uint8_t"
+        }
+      },
+      "required": [
+        "wifi_coex_enabled",
+        "pll_locking_code"
+      ],
+      "title": "channel",
+      "type": "object"
+    },
+    "debug_config": {
+      "properties": {
+        "tx_power": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Tx Power",
+          "type": "integer",
+          "underlying_type": "uint32_t"
+        },
+        "pa_enabled": {
+          "title": "Pa Enabled",
+          "type": "boolean"
+        },
+        "pll_cfg": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Pll Cfg",
+          "type": "integer",
+          "underlying_type": "uint32_t"
+        },
+        "rx_segment": {
+          "$ref": "#/$defs/rx_segment"
+        }
+      },
+      "required": [
+        "tx_power",
+        "pa_enabled",
+        "pll_cfg",
+        "rx_segment"
+      ],
+      "title": "debug_config",
+      "type": "object"
+    },
+    "dual_rx_auto_config": {
+      "properties": {
+        "accum_period": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Accum Period",
+          "type": "integer",
+          "underlying_type": "uint8_t"
+        },
+        "rssi_diff_thres": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Rssi Diff Thres",
+          "type": "integer",
+          "underlying_type": "uint8_t"
+        },
+        "error_rate_thres": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Error Rate Thres",
+          "type": "integer",
+          "underlying_type": "uint8_t"
+        }
+      },
+      "required": [
+        "accum_period",
+        "rssi_diff_thres",
+        "error_rate_thres"
+      ],
+      "title": "dual_rx_auto_config",
+      "type": "object"
+    },
+    "experimental": {
+      "properties": {
+        "mac": {
+          "$ref": "#/$defs/mac_params"
+        }
+      },
+      "required": [
+        "mac"
+      ],
+      "title": "experimental",
+      "type": "object"
+    },
+    "mac_params": {
+      "properties": {
+        "session_scheduler": {
+          "$ref": "#/$defs/mac_session_scheduler_params"
+        }
+      },
+      "required": [
+        "session_scheduler"
+      ],
+      "title": "mac_params",
+      "type": "object"
+    },
+    "mac_session_scheduler_id": {
+      "enum": [
+        "STRICT",
+        "FAIR"
+      ],
+      "type": "string",
+      "underlying_enum": {
+        "FAIR": 1,
+        "STRICT": 0
+      }
+    },
+    "mac_session_scheduler_params": {
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/mac_session_scheduler_id"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "mac_session_scheduler_params",
+      "type": "object"
+    },
+    "pdoa_axis": {
+      "enum": [
+        "x",
+        "y",
+        "z"
+      ],
+      "type": "string",
+      "underlying_enum": {
+        "x": 0,
+        "y": 1,
+        "z": 2
+      }
+    },
+    "pdoa_config": {
+      "properties": {
+        "offset": {
+          "maximum": 32767,
+          "minimum": -32768,
+          "title": "Offset",
+          "type": "integer",
+          "underlying_type": "int16_t"
+        },
+        "lut_id": {
+          "maximum": 3,
+          "minimum": -1,
+          "title": "Lut Id",
+          "type": "integer",
+          "underlying_type": "int8_t"
+        }
+      },
+      "required": [
+        "offset",
+        "lut_id"
+      ],
+      "title": "pdoa_config",
+      "type": "object"
+    },
+    "pdoa_lut": {
+      "properties": {
+        "data": {
+          "items": {
+            "items": {
+              "maximum": 32767,
+              "minimum": -32768,
+              "type": "integer",
+              "underlying_type": "int16_t"
+            },
+            "maxItems": 2,
+            "type": "array"
+          },
+          "maxItems": 31,
+          "title": "Data",
+          "type": "array"
+        }
+      },
+      "required": [
+        "data"
+      ],
+      "title": "pdoa_lut",
+      "type": "object"
+    },
+    "post_tx_config": {
+      "properties": {
+        "pattern_data": {
+          "items": {
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer",
+            "underlying_type": "uint8_t"
+          },
+          "maxItems": 8,
+          "title": "Pattern Data",
+          "type": "array"
+        },
+        "pattern_repetitions": {
+          "maximum": 65535,
+          "minimum": 0,
+          "title": "Pattern Repetitions",
+          "type": "integer",
+          "underlying_type": "uint16_t"
+        }
+      },
+      "required": [
+        "pattern_data",
+        "pattern_repetitions"
+      ],
+      "title": "post_tx_config",
+      "type": "object"
+    },
+    "ref_frame": {
+      "properties": {
+        "phy_cfg": {
+          "$ref": "#/$defs/ref_frame_phy_cfg"
+        },
+        "payload_size": {
+          "maximum": 65535,
+          "minimum": 0,
+          "title": "Payload Size",
+          "type": "integer",
+          "underlying_type": "uint16_t"
+        }
+      },
+      "required": [
+        "phy_cfg",
+        "payload_size"
+      ],
+      "title": "ref_frame",
+      "type": "object"
+    },
+    "ref_frame_phy_cfg": {
+      "properties": {
+        "prf": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Prf",
+          "type": "integer"
+        },
+        "sfd_type": {
+          "maximum": 7,
+          "minimum": 0,
+          "title": "Sfd Type",
+          "type": "integer"
+        },
+        "psr": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Psr",
+          "type": "integer"
+        },
+        "data_rate": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Data Rate",
+          "type": "integer"
+        },
+        "phr_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Phr Rate",
+          "type": "integer"
+        },
+        "seg_num": {
+          "maximum": 7,
+          "minimum": 0,
+          "title": "Seg Num",
+          "type": "integer"
+        },
+        "seg_len": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Seg Len",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "prf",
+        "sfd_type",
+        "psr",
+        "data_rate",
+        "phr_rate",
+        "seg_num",
+        "seg_len"
+      ],
+      "title": "ref_frame_phy_cfg",
+      "type": "object",
+      "underlying_type": "bitfield"
+    },
+    "rx_diag_config": {
+      "properties": {
+        "cir_n_taps": {
+          "maximum": 1024,
+          "minimum": 0,
+          "title": "Cir N Taps",
+          "type": "integer",
+          "underlying_type": "uint16_t"
+        },
+        "cir_fp_tap_offset": {
+          "maximum": 65535,
+          "minimum": 0,
+          "title": "Cir Fp Tap Offset",
+          "type": "integer",
+          "underlying_type": "uint16_t"
+        }
+      },
+      "required": [
+        "cir_n_taps",
+        "cir_fp_tap_offset"
+      ],
+      "title": "rx_diag_config",
+      "type": "object"
+    },
+    "rx_segment": {
+      "enum": [
+        "IP_M",
+        "STS0_M",
+        "STS1_M",
+        "STS2_M",
+        "STS3_M",
+        "IP_S",
+        "STS0_S",
+        "STS1_S",
+        "STS2_S",
+        "STS3_S",
+        "FORCED_DISABLED"
+      ],
+      "type": "string",
+      "underlying_enum": {
+        "FORCED_DISABLED": 255,
+        "IP_M": 0,
+        "IP_S": 40,
+        "STS0_M": 8,
+        "STS0_S": 48,
+        "STS1_M": 16,
+        "STS1_S": 56,
+        "STS2_M": 24,
+        "STS2_S": 64,
+        "STS3_M": 32,
+        "STS3_S": 72
+      }
+    },
+    "transceiver": {
+      "enum": [
+        "TX",
+        "RXA",
+        "RXB"
+      ],
+      "type": "string",
+      "underlying_enum": {
+        "RXA": 1,
+        "RXB": 2,
+        "TX": 0
+      }
+    },
+    "tx_power_control": {
+      "properties": {
+        "frame": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Frame",
+          "type": "integer"
+        },
+        "post_tx": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Post Tx",
+          "type": "integer"
+        },
+        "rfu": {
+          "maximum": 31,
+          "minimum": 0,
+          "title": "Rfu",
+          "type": "integer"
+        },
+        "debug": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Debug",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame",
+        "post_tx",
+        "rfu",
+        "debug"
+      ],
+      "title": "tx_power_control",
+      "type": "object",
+      "underlying_type": "bitfield"
+    },
+    "wifi_coex_mode": {
+      "enum": [
+        "DISABLED",
+        "BLOCK_BASED_ONE_DIR",
+        "BLOCK_BASED_TWO_DIR",
+        "FRAME_BASED_ONE_DIR"
+      ],
+      "type": "string",
+      "underlying_enum": {
+        "BLOCK_BASED_ONE_DIR": 1,
+        "BLOCK_BASED_TWO_DIR": 2,
+        "DISABLED": 0,
+        "FRAME_BASED_ONE_DIR": 3
+      }
+    },
+    "wifi_sw_config": {
+      "properties": {
+        "level": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Level",
+          "type": "integer"
+        },
+        "mode": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Mode",
+          "type": "integer"
+        },
+        "time_gap_us": {
+          "maximum": 63,
+          "minimum": 0,
+          "title": "Time Gap Us",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "level",
+        "mode",
+        "time_gap_us"
+      ],
+      "title": "wifi_sw_config",
+      "type": "object",
+      "underlying_type": "bitfield"
+    }
+  },
+  "properties": {
+    "restricted_channels": {
+      "maximum": 65535,
+      "minimum": 0,
+      "title": "Restricted Channels",
+      "type": "integer",
+      "underlying_type": "uint16_t"
+    },
+    "wifi_coex_mode": {
+      "$ref": "#/$defs/wifi_coex_mode"
+    },
+    "wifi_coex_time_gap": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Wifi Coex Time Gap",
+      "type": "integer",
+      "underlying_type": "uint8_t"
+    },
+    "ch5": {
+      "$ref": "#/$defs/channel"
+    },
+    "ch9": {
+      "$ref": "#/$defs/channel"
+    },
+    "wifi_coex_max_grant_duration": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Wifi Coex Max Grant Duration",
+      "type": "integer",
+      "underlying_type": "uint8_t"
+    },
+    "wifi_coex_min_inactive_duration": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Wifi Coex Min Inactive Duration",
+      "type": "integer",
+      "underlying_type": "uint8_t"
+    },
+    "wifi_sw_cfg": {
+      "$ref": "#/$defs/wifi_sw_config"
+    },
+    "alternate_pulse_shape": {
+      "$ref": "#/$defs/alternate_pulse_shape"
+    },
+    "ref_frame0": {
+      "$ref": "#/$defs/ref_frame"
+    },
+    "ref_frame1": {
+      "$ref": "#/$defs/ref_frame"
+    },
+    "ref_frame2": {
+      "$ref": "#/$defs/ref_frame"
+    },
+    "ref_frame3": {
+      "$ref": "#/$defs/ref_frame"
+    },
+    "ref_frame4": {
+      "$ref": "#/$defs/ref_frame"
+    },
+    "ref_frame5": {
+      "$ref": "#/$defs/ref_frame"
+    },
+    "ref_frame6": {
+      "$ref": "#/$defs/ref_frame"
+    },
+    "ref_frame7": {
+      "$ref": "#/$defs/ref_frame"
+    },
+    "rx_diag_config": {
+      "$ref": "#/$defs/rx_diag_config"
+    },
+    "xtal_trim": {
+      "maximum": 127,
+      "minimum": 0,
+      "title": "Xtal Trim",
+      "type": "integer",
+      "underlying_type": "uint8_t"
+    },
+    "rf_noise_offset": {
+      "maximum": 127,
+      "minimum": -128,
+      "title": "Rf Noise Offset",
+      "type": "integer",
+      "underlying_type": "int8_t"
+    },
+    "pdoa_lut0": {
+      "$ref": "#/$defs/pdoa_lut"
+    },
+    "pdoa_lut1": {
+      "$ref": "#/$defs/pdoa_lut"
+    },
+    "pdoa_lut2": {
+      "$ref": "#/$defs/pdoa_lut"
+    },
+    "pdoa_lut3": {
+      "$ref": "#/$defs/pdoa_lut"
+    },
+    "debug": {
+      "$ref": "#/$defs/debug_config"
+    },
+    "post_tx": {
+      "$ref": "#/$defs/post_tx_config"
+    },
+    "dual_rx_auto": {
+      "$ref": "#/$defs/dual_rx_auto_config"
+    },
+    "ip_sts_sanity_thres_q2": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Ip Sts Sanity Thres Q2",
+      "type": "integer",
+      "underlying_type": "uint8_t"
+    },
+    "ant0": {
+      "$ref": "#/$defs/antenna_path"
+    },
+    "ant1": {
+      "$ref": "#/$defs/antenna_path"
+    },
+    "ant2": {
+      "$ref": "#/$defs/antenna_path"
+    },
+    "ant3": {
+      "$ref": "#/$defs/antenna_path"
+    },
+    "ant_pair0": {
+      "$ref": "#/$defs/antenna_pair"
+    },
+    "ant_pair1": {
+      "$ref": "#/$defs/antenna_pair"
+    },
+    "ant_pair2": {
+      "$ref": "#/$defs/antenna_pair"
+    },
+    "ant_pair3": {
+      "$ref": "#/$defs/antenna_pair"
+    },
+    "ant_set0": {
+      "$ref": "#/$defs/antenna_set"
+    },
+    "ant_set1": {
+      "$ref": "#/$defs/antenna_set"
+    },
+    "ant_set2": {
+      "$ref": "#/$defs/antenna_set"
+    },
+    "ant_set3": {
+      "$ref": "#/$defs/antenna_set"
+    },
+    "experimental": {
+      "$ref": "#/$defs/experimental"
+    }
+  },
+  "required": [
+    "restricted_channels",
+    "wifi_coex_mode",
+    "wifi_coex_time_gap",
+    "ch5",
+    "ch9",
+    "wifi_coex_max_grant_duration",
+    "wifi_coex_min_inactive_duration",
+    "wifi_sw_cfg",
+    "alternate_pulse_shape",
+    "ref_frame0",
+    "ref_frame1",
+    "ref_frame2",
+    "ref_frame3",
+    "ref_frame4",
+    "ref_frame5",
+    "ref_frame6",
+    "ref_frame7",
+    "rx_diag_config",
+    "xtal_trim",
+    "rf_noise_offset",
+    "pdoa_lut0",
+    "pdoa_lut1",
+    "pdoa_lut2",
+    "pdoa_lut3",
+    "debug",
+    "post_tx",
+    "dual_rx_auto",
+    "ip_sts_sanity_thres_q2",
+    "ant0",
+    "ant1",
+    "ant2",
+    "ant3",
+    "ant_pair0",
+    "ant_pair1",
+    "ant_pair2",
+    "ant_pair3",
+    "ant_set0",
+    "ant_set1",
+    "ant_set2",
+    "ant_set3",
+    "experimental"
+  ],
+  "title": "l1_config",
+  "type": "object"
+}

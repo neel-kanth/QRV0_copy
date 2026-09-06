@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2021 Qorvo US, Inc.  All rights reserved.
+#
+# This software is proprietary to Qorvo; you may not use it
+# for any purpose without first obtaining a license from Qorvo.
+#
+# Please contact Qorvo to inquire about licensing terms.
+#
+
+menuconfig LIBQMROM
+	bool "Libqmrom lib"
+	default y
+	help
+	  Enable Libqmrom lib
+
+config LIBQMROM_ZEPHYR
+	bool "Use Libqmrom lib for Zephyr"
+	default n
+	depends on LIBQMROM
+	help
+	  This option sets the build of Libqmrom lib for Zephyr.

@@ -1,0 +1,19 @@
+pyserial
+colorama
+toml
+pycparser
+pyftdi
+pyft4222==0.1.2
+matplotlib
+pyside6-essentials==6.7.1
+shiboken6==6.7.1
+scikit-learn
+scipy
+pyqtgraph
+colorhash
+superqt
+numpy
+qtpy>=1.1.0
+pygments>=2.4.0
+typing-extensions!=3.10.0.0,>=3.7.4.3
+-e .

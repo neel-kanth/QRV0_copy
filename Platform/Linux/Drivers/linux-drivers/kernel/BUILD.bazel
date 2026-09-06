@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+load("//build/kernel/kleaf:kernel.bzl", "kernel_module")
+
+# Simplified conf building only the lowlatency driver.
+kernel_module(
+    name = "spi-lowlatency",
+    srcs = [
+        "drivers/spi/spi-geni-qcom-lowlatency.c",
+        "drivers/spi/Kbuild",
+        "Kbuild",
+    ],
+    outs = [
+        "drivers/spi/spi-geni-qcom-lowlatency.ko",
+    ],
+    kernel_build = "//common:db845c-qm35",
+    visibility = [
+        "//visibility:public"
+    ],
+)
+
+kernel_module(
+    name = "qm35_spi",
+    srcs = glob([
+        "gitversion.mk",
+        "**/*.c",
+        "**/*.h",
+        "**/Kbuild",
+    ]),
+    outs = [
+        "drivers/base/qm/qm3x_apis.ko",
+        "drivers/base/qm/qm3x_coredump.ko",
+        "drivers/base/qm/qm3x_logs.ko",
+        "drivers/base/qm/qm3x_uci_dev.ko",
+        "drivers/spi/qm/qm35_spi.ko",
+        "drivers/spi/spi-geni-qcom-lowlatency.ko",
+    ],
+    kernel_build = "//common:db845c-qm35",
+    visibility = [
+        "//visibility:public"
+    ],
+)

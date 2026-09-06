@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (c) 2024 Qorvo US, Inc.
+# SPDX-License-Identifier: LicenseRef-QORVO-2
+
+[tool.poetry]
+name = "uqt-utils"
+version = "0.0.0"
+description = "Helper library for UQT"
+authors = ["Qorvo Inc. <qorvo@qorvo.com>"]
+license = "Proprietary"
+
+[tool.poetry.dependencies]
+python = ">=3.9 <3.12.0"
+uwb-uci = { path = "../uwb-uci", develop = true }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

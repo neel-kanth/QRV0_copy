@@ -1,0 +1,22 @@
+#
+# Copyright (c) 2024 Qorvo US, Inc.  All rights reserved.
+#
+# This software is proprietary to Qorvo; you may not use it
+# for any purpose without first obtaining a license from Qorvo.
+#
+# Please contact Qorvo to inquire about licensing terms.
+#
+
+menuconfig CHERRY_EXAMPLES_UTILITIES
+	bool "Cherry examples utilities lib"
+	default y
+	help
+	  Enable Cherry examples utilities lib
+
+config CHERRY_EXAMPLES_UTILITIES_ZEPHYR
+	bool "Use Cherry examples utilities lib for Zephyr"
+	default n
+	depends on CHERRY_EXAMPLES_UTILITIES
+	select CHERRY_ZEPHYR
+	help
+	  This option sets the build of Cherry examples utilities lib for Zephyr.

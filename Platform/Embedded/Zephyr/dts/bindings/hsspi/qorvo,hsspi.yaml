@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: Copyright (c) 2024 Qorvo, Inc.
+# SPDX-License-Identifier: LicenseRef-QORVO-2
+
+description: |
+  HSSPI Driver
+
+  Example definition in devicetree:
+
+      hsspi0: hsspi@102000 {
+        compatible = "qorvo-hsspi";
+        label = "SPI_0";
+        status = "okay";
+        spi-driver = < &spi1 >;
+        ss-irq-gpios = < &gpio1 0x1 0x0 >;
+        reset-gpios = < &gpio1 0x2 0x1 >;
+      };
+
+compatible: "qorvo,hsspi"
+
+include: spi-device.yaml
+
+properties:
+  ss-irq-gpios:
+    type: phandle-array
+    required: true
+  reset-gpios:
+    type: phandle-array
+    required: true
+  exton-gpios:
+    type: phandle-array
+    required: false

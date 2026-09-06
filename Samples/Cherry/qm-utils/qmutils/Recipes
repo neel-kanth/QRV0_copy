@@ -1,0 +1,18 @@
+# Run with `make -f Recipes <command>`.
+#
+# You can get help with `make -f Recipes help`.
+
+ROOT_DIR=$(shell git rev-parse --show-toplevel)
+
+KERNEL_DOC:=$(ROOT_DIR)/tools/kernel-doc
+include $(ROOT_DIR)/tools/Recipes.mk
+
+# Redefined target.
+test-san: build-san
+	./$(BUILD_SAN_DIR)/test_qmutils_multichan $(TESTFLAGS)
+	./$(BUILD_SAN_DIR)/test_qmutils_bypass $(TESTFLAGS)
+
+# Redefined target.
+build-cov: | $(BUILD_COV_DIR)
+	cmake --build $(BUILD_COV_DIR) -t test_qmutils_multichan_coverage
+	cmake --build $(BUILD_COV_DIR) -t test_qmutils_bypass_coverage

@@ -1,0 +1,8 @@
+version: 1
+config:
+  wifi_coex_max_grant_duration: 0
+  wifi_coex_min_inactive_duration: 128
+  wifi_sw_cfg:
+    level: 1
+    mode: 0
+    time_gap_us: 63

@@ -1,0 +1,29 @@
+#
+# Copyright (c) 2021 Qorvo US, Inc.  All rights reserved.
+#
+# This software is proprietary to Qorvo; you may not use it
+# for any purpose without first obtaining a license from Qorvo.
+#
+# Please contact Qorvo to inquire about licensing terms.
+#
+
+menuconfig CHERRY_EXAMPLES
+	bool "Cherry examples"
+	default y
+	help
+	  Enable Cherry examples
+
+config CHERRY_EXAMPLES_ZEPHYR
+	bool "Build Cherry examples for Zephyr"
+	default n
+	depends on CHERRY_EXAMPLES
+	select CHERRY_EXAMPLES_UTILITIES_ZEPHYR
+	help
+	  This option sets the build of Cherry examples for Zephyr.
+
+config CHERRY_EXAMPLES_GETOPT_SUPPORT
+	bool "Enable getopt() in Cherry examples for Zephyr build"
+	default n
+	depends on CHERRY_EXAMPLES_ZEPHYR
+	help
+	  This option enable getopt() in the Cherry examples for Zephyr build.

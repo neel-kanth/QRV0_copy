@@ -1,0 +1,37 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2024 Qorvo, Inc.
+ * SPDX-License-Identifier: LicenseRef-QORVO-2
+ */
+
+package {
+    default_applicable_licenses: ["vendor_qorvo_uwb_1_license"],
+}
+
+cc_library_static {
+    name: "libqorvo_qmutils",
+    vendor: true,
+    host_supported: true,
+    export_include_dirs: [
+        "include",
+        "include/android",
+    ],
+    srcs: [
+        "src/android/qmutils_pthread_cancel.c",
+        "src/common.c",
+        "src/coredump.c",
+        "src/hsspi.c",
+        "src/log.c",
+        "src/misc.c",
+        "src/multichan.c",
+        "src/qtrace.c",
+        "src/uci.c",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+        "-Wextra",
+    ],
+    static_libs: [
+        "qosal",
+    ],
+}
